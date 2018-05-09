@@ -8,7 +8,8 @@ do
 	ping -c1 $ip &>>/dev/null && echo "$ip +" || echo "$ip -"
 done >>now.tmp
 now=( $(cat ./now.tmp) )
-for i in "${now[@]}"
+size_arr=$( #now[@] );
+for (( i=0; i<size_arr; i++ ))
 do
 echo "${log[$i]}        ${now[$i]}"
 	if [ "${log[$i]}" != "${now[$i]}" ]
@@ -17,6 +18,7 @@ echo "${log[$i]}        ${now[$i]}"
 		 echo "${now[$i]}"
 	fi
 done #>>mail.tmp
+exit
 cat ./mail.tmp | mail -s "ip=" root
 >cash.scan
 for i in "${now[@]}"
