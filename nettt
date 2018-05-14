@@ -28,12 +28,15 @@ cat ./mail.tmp | mail -s "ip=" root
 >cash.scan
 for (( i=0; i<sizear; i+=2 ))
 do
-	 if [ "${log[$j]}" = "${now[$i]}" ]&&[ "${log[$i+1]}" != "${now[i+1]}" ]
-                then
-			echo "${now[$i]} ${now[$i+1]}"
-		else
-			echo "${log[$i]} ${log[$i+1]}"
-                fi
+	for((j=0; j<size_arr; j+=2))
+	do
+		 if [ "${log[$i]}" = "${now[$j]}" ]&&[ "${log[$i+1]}" != "${now[j+1]}" ]
+			then
+				echo "${now[$j]} ${now[$j+1]}"
+			else
+				echo "${log[$i]} ${log[$i+1]}"
+			fi
+	done
 done >>cash.scan
 rm ./mail.tmp
 rm ./now.tmp
