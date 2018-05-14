@@ -2,35 +2,44 @@ if [ -e ./cash.scan ]
 then
 log=( $(cat ./cash.scan) )
 net="10.7.180."
-for i in {100..110}
+>now.tmp
+for i in {100..105}
 do
 	ip="$net$i"
 	ping -c1 $ip &>>/dev/null && echo "$ip +" || echo "$ip -"
 done >>now.tmp
 now=( $(cat ./now.tmp) )
-size_arr=$( #now[@] );
-for (( i=0; i<size_arr; i++ ))
+size_arr=${#now[@]}
+sizear=${#log[@]}
+>mail.tmp
+for (( i=0; i<size_arr; i+=2 ))
 do
-echo "${log[$i]}        ${now[$i]}"
-	if [ "${log[$i]}" != "${now[$i]}" ]
-	then
-		
-		 echo "${now[$i]}"
-	fi
-done #>>mail.tmp
-exit
+#echo "${log[$i]}!!${now[$i]}"
+	for ((j=0; j<sizear; j+=2 ))
+	do
+		if [ "${log[$j]}" = "${now[$i]}" ]&&[ "${log[$i+1]}" != "${now[i+1]}" ]
+		then
+				echo "${now[$i]} ${now[$i+1]}"
+		fi
+	done
+done >>mail.tmp
+#exit
 cat ./mail.tmp | mail -s "ip=" root
 >cash.scan
-for i in "${now[@]}"
+for (( i=0; i<sizear; i+=2 ))
 do
-
-	echo "${now[$i]}"
+	 if [ "${log[$j]}" = "${now[$i]}" ]&&[ "${log[$i+1]}" != "${now[i+1]}" ]
+                then
+			echo "${now[$i]} ${now[$i+1]}"
+		else
+			echo "${log[$i]} ${log[$i+1]}"
+                fi
 done >>cash.scan
 rm ./mail.tmp
 rm ./now.tmp
 else
 net="10.7.180."
-for i in {100..110}
+for i in {0..255}
 do
         echo "$net$i -"
 done >>cash.scan
