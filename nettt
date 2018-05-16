@@ -1,24 +1,29 @@
+date +"%T"
+file="cash.scan"
 net="10.7.180."
 diapazon=$(echo {127..135})
-size_diap=${#diapazon[@]}
-if [ -e ./cash.scan ]
+
+if [ -s $file ]
 then
-log=( $(cat ./cash.scan) )
-now='='
-for i in $diapazon
-do
-	ip="$net$i"
-	ping -c1 $ip &>>/dev/null && now="+" || now="-"
-	if [ $now != ${log[$i]} ]
-	then
-		echo "$net$i $now"
-		log[$i]=$now
-	fi
-done
-echo ${log[@]}>cash.scan
+echo "file ok"
+	log=( $(cat $file) )
+	# now="Unable"
+	for i in $diapazon
+	do
+		ip="$net$i"
+		ping -c1 $ip &>>/dev/null && now="Conect_Complete" || now="Disconect"
+		echo "ping $now ${log[$i]}"
+		if [ $now != ${log[$i]} ]
+		then
+			echo "$ip $now"
+			log[$i]=$now
+		fi
+	done
+	echo ${log[@]}>$file
 else
-for i in {0..255}
-do
-        echo "="
-done >>cash.scan
+echo "file fatal"
+	for i in {0..255}
+	do
+		echo "Unable"
+	done >>$file
 fi
