@@ -1,41 +1,21 @@
 net="10.7.180."
-diapazon=$(echo {100..105})
+diapazon=$(echo {127..135})
 size_diap=${#diapazon[@]}
 if [ -e ./cash.scan ]
 then
 log=( $(cat ./cash.scan) )
->now.tmp
+now='='
 for i in $diapazon
 do
 	ip="$net$i"
-	ping -c1 $ip &>>/dev/null && echo "+" || echo "-"
-done >>now.tmp
-now=( $(cat ./now.tmp) )
-for i in $diapazon
-do
-#echo "${log[$i]}!!${now[$i]}
-		if [ "${log[i]}" != "${now[i]}" ]
-		then
-				echo "$net$i ${now[@]}"
-		fi
+	ping -c1 $ip &>>/dev/null && now="+" || now="-"
+	if [ $now != ${log[$i]} ]
+	then
+		echo "$net$i $now"
+		log[$i]=$now
+	fi
 done
-exit
-cat ./mail.tmp | mail -s "ip=" root
->cash.scan
-for (( i=0; i<sizear; i+=2 ))
-do
-	for((j=0; j<size_arr; j+=2))
-	do
-		 if [ "${log[$i]}" = "${now[$j]}" ]&&[ "${log[$i+1]}" != "${now[j+1]}" ]
-			then
-				echo "${now[$j]} ${now[$j+1]}"
-			else
-				echo "${log[$i]} ${log[$i+1]}"
-			fi
-	done
-done >>cash.scan
-rm ./mail.tmp
-rm ./now.tmp
+echo ${log[@]}>cash.scan
 else
 for i in {0..255}
 do
